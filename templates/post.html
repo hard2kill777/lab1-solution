@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% macro render_comments(comments) %}
+    {% for comment in comments %}
+        <div class="d-flex mb-3">
+            <div class="flex-shrink-0">
+                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                    ...
+                </div>
+            </div>
+            <div class="flex-grow-1 ms-3">
+                <h5 class="mt-0 mb-1">{{ comment.author }}</h5>
+                <p>{{ comment.text }}</p>
+
+                {% if comment.replies %}
+                    <div class="ms-4">
+                        {{ render_comments(comment.replies) }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% endmacro %}
+
+{% block content %}
+<article class="mx-auto" style="max-width: 900px;">
+    <h1 class="mt-4 mb-2">{{ post.title }}</h1>
+
+    <p class="mb-3">
+        {{ post.author }}, {{ post.date.strftime('%d.%m.%Y') }}
+    </p>
+
+    <img class="img-fluid rounded mx-auto d-block mb-4" src="{{ url_for('static', filename='images/' + post.image_id) }}" alt="{{ post.title }}">
+
+    <p class="text-justify">{{ post.text }}</p>
+
+    <section class="card my-4">
+        <div class="card-header">Оставьте комментарий</div>
+        <div class="card-body">
+            <form>
+                <div class="mb-3">
+                    <textarea class="form-control" name="comment" rows="4"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Отправить</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="comments mb-5">
+        {{ render_comments(post.comments) }}
+    </section>
+</article>
+{% endblock %}
